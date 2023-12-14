@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 
 namespace Rugal.DatabaseWorker.Mongo.Service
 {
-    public class MongoDbWorker : DbWorker
+    public class MongoWorker : DbWorker
     {
         public IMongoDatabase Database { get; private set; }
-        public MongoDbWorker(IMongoDatabase _Mongo)
+        public MongoWorker(IMongoDatabase _Mongo)
         {
             Database = _Mongo;
         }
@@ -80,6 +80,11 @@ namespace Rugal.DatabaseWorker.Mongo.Service
             return NewWorker;
         }
 
+        public static MongoWorker AsMongoWorker(IMongoDatabase Database)
+        {
+            var NewWorker = new MongoWorker(Database);
+            return NewWorker;
+        }
         public MongoCollectWorker<TModel> AsCollectWorker<TModel>(string CollectName)
             where TModel : class, IMongoModel
         {
@@ -93,7 +98,7 @@ namespace Rugal.DatabaseWorker.Mongo.Service
             return NewWorker;
         }
     }
-    public class MongoCollectWorker<TModel> : MongoDbWorker
+    public class MongoCollectWorker<TModel> : MongoWorker
         where TModel : class, IMongoModel
     {
         public string CollectName { get; private set; }

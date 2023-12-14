@@ -14,7 +14,6 @@ namespace Rugal.DatabaseWorker.Core.Service
             Context = _Context;
             Table = _Table;
         }
-
         public virtual ContextWorker<TContext, TModel> Add(TModel Model)
         {
             BaseAdd(Model);
