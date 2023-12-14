@@ -158,13 +158,10 @@ namespace Rugal.DatabaseWorker.Mongo.Service
             using var Session = Database.Client.StartSession();
             try
             {
-                Session.StartTransaction();
                 Collect.BulkWrite(Session, Commands);
-                Session.CommitTransaction();
             }
             catch (Exception ex)
             {
-                Session.AbortTransaction();
                 Console.WriteLine(ex.ToString());
                 throw new Exception(ex.ToString());
             }
