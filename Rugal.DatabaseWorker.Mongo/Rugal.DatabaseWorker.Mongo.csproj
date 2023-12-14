@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
+		<RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<FileVersion>$(AssemblyVersion)-beta</FileVersion>
+		<Version>$(AssemblyVersion)-beta</Version>
+		<Authors>Rugal</Authors>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MongoDB.Driver" Version="2.23.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Rugal.DatabaseWorker.Core\Rugal.DatabaseWorker.Core.csproj" />
+	</ItemGroup>
+
+</Project>
