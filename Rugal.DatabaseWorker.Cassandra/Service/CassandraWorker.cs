@@ -54,23 +54,23 @@ namespace Rugal.DatabaseWorker.Cassandra.Service
             base.WithSession(_Session);
             return this;
         }
-        public CassandraTableWorker<TModel> WithTableName(string _TableName)
+        public virtual CassandraTableWorker<TModel> WithTableName(string _TableName)
         {
             TableName = _TableName;
             NewTable();
             return this;
         }
-        public CassandraTableWorker<TModel> WithTableConfig(MappingConfiguration _TableConfig)
+        public virtual CassandraTableWorker<TModel> WithTableConfig(MappingConfiguration _TableConfig)
         {
             TableConfig = _TableConfig;
             NewTable();
             return this;
         }
-        public CassandraModifyWorker<TModel> WithModify()
+        public virtual CassandraModifyWorker<TModel> WithModify()
         {
             return base.WithModify<TModel>(TableName);
         }
-        public CassandraQueryWorker<TModel> WithQuery()
+        public virtual CassandraQueryWorker<TModel> WithQuery()
         {
             return base.WithQuery<TModel>(TableName);
         }
