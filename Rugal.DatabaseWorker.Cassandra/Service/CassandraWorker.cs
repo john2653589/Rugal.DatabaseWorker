@@ -9,9 +9,15 @@ namespace Rugal.DatabaseWorker.Cassandra.Service
     public class CassandraWorker
     {
         public ISession Session { get; private set; }
+        public CassandraWorker() { }
         public CassandraWorker(ISession _Session)
         {
             Session = _Session;
+        }
+        public virtual CassandraWorker WithSession(ISession _Session)
+        {
+            Session = _Session;
+            return this;
         }
         public virtual CassandraTableWorker<TModel> WithTable<TModel>(string TableName)
         {
@@ -34,6 +40,7 @@ namespace Rugal.DatabaseWorker.Cassandra.Service
         public string TableName { get; private set; }
         public MappingConfiguration TableConfig { get; private set; }
         public Table<TModel> Table { get; private set; }
+        public CassandraTableWorker() { }
         public CassandraTableWorker(ISession _Session, string _TableName) : base(_Session)
         {
             TableName = _TableName;
@@ -42,6 +49,11 @@ namespace Rugal.DatabaseWorker.Cassandra.Service
         }
 
         #region With Method
+        public override CassandraTableWorker<TModel> WithSession(ISession _Session)
+        {
+            base.WithSession(_Session);
+            return this;
+        }
         public CassandraTableWorker<TModel> WithTableName(string _TableName)
         {
             TableName = _TableName;
