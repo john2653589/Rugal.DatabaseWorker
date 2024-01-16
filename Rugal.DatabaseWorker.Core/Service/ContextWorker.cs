@@ -19,7 +19,8 @@ namespace Rugal.DatabaseWorker.Core.Service
             BaseAdd(Model);
             return this;
         }
-        public virtual ContextWorker<TContext, TModel> Add(Func<TContext, DbSet<TModel>> TableFunc, TModel Model)
+        public virtual ContextWorker<TContext, TTable> Add<TTable>(Func<TContext, DbSet<TTable>> TableFunc, TTable Model)
+            where TTable : class
         {
             var NewWorker = AsContextWorker(Context, TableFunc)
                 .Add(Model);
@@ -93,7 +94,7 @@ namespace Rugal.DatabaseWorker.Core.Service
             Context.SaveChanges();
             return this;
         }
-        
+
         #region Private Process
         protected virtual void BaseAdd(TModel Model)
         {
