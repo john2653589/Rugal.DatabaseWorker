@@ -15,32 +15,32 @@ namespace Rugal.DatabaseWorker.Core.Service
             where TContext : DbContext
             where TModel : class
         {
-            var NewWorker = new ContextWorker<TContext, TModel>(Context, TableFunc(Context));
-            NewWorker.Add(Model);
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .Add(Model);
             return NewWorker;
         }
         public virtual ContextWorker<TContext, TModel> Update<TContext, TModel>(TContext Context, Func<TContext, DbSet<TModel>> TableFunc, TModel Model)
             where TContext : DbContext
             where TModel : class
         {
-            var NewWorker = new ContextWorker<TContext, TModel>(Context, TableFunc(Context));
-            NewWorker.Update(Model);
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .Update(Model);
             return NewWorker;
         }
         public virtual ContextWorker<TContext, TModel> Remove<TContext, TModel>(TContext Context, Func<TContext, DbSet<TModel>> TableFunc, TModel Model)
             where TContext : DbContext
             where TModel : class
         {
-            var NewWorker = new ContextWorker<TContext, TModel>(Context, TableFunc(Context));
-            NewWorker.Remove(Model);
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .Remove(Model);
             return NewWorker;
         }
         public virtual ContextWorker<TContext, TModel> SaveChanges<TContext, TModel>(TContext Context, Func<TContext, DbSet<TModel>> TableFunc)
             where TContext : DbContext
             where TModel : class
         {
-            var NewWorker = new ContextWorker<TContext, TModel>(Context, TableFunc(Context));
-            NewWorker.SaveChanges();
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .SaveChanges();
             return NewWorker;
         }
     }

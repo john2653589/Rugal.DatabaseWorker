@@ -19,16 +19,36 @@ namespace Rugal.DatabaseWorker.Core.Service
             BaseAdd(Model);
             return this;
         }
+        public virtual ContextWorker<TContext, TModel> Add(Func<TContext, DbSet<TModel>> TableFunc, TModel Model)
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .Add(Model);
+            return NewWorker;
+        }
         public virtual ContextWorker<TContext, TModel> AddRange(IEnumerable<TModel> Models)
         {
             foreach (var Item in Models)
                 BaseAdd(Item);
             return this;
         }
+        public virtual ContextWorker<TContext, TTable> AddRange<TTable>(Func<TContext, DbSet<TTable>> TableFunc, IEnumerable<TTable> Models)
+            where TTable : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .AddRange(Models);
+            return NewWorker;
+        }
         public virtual ContextWorker<TContext, TModel> Update(TModel Model)
         {
             BaseUpdate(Model);
             return this;
+        }
+        public virtual ContextWorker<TContext, TTable> Update<TTable>(Func<TContext, DbSet<TTable>> TableFunc, TTable Model)
+            where TTable : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .Update(Model);
+            return NewWorker;
         }
         public virtual ContextWorker<TContext, TModel> UpdateRange(IEnumerable<TModel> Models)
         {
@@ -36,23 +56,44 @@ namespace Rugal.DatabaseWorker.Core.Service
                 BaseUpdate(Item);
             return this;
         }
+        public virtual ContextWorker<TContext, TTable> UpdateRange<TTable>(Func<TContext, DbSet<TTable>> TableFunc, IEnumerable<TTable> Models)
+            where TTable : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .UpdateRange(Models);
+            return NewWorker;
+        }
         public virtual ContextWorker<TContext, TModel> Remove(TModel Model)
         {
             BaseRemove(Model);
             return this;
         }
-        public virtual ContextWorker<TContext, TModel> Remove(IEnumerable<TModel> Models)
+        public virtual ContextWorker<TContext, TTable> Remove<TTable>(Func<TContext, DbSet<TTable>> TableFunc, TTable Model)
+            where TTable : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .Remove(Model);
+            return NewWorker;
+        }
+        public virtual ContextWorker<TContext, TModel> RemoveRange(IEnumerable<TModel> Models)
         {
             foreach (var Item in Models)
                 BaseRemove(Item);
             return this;
+        }
+        public virtual ContextWorker<TContext, TTable> RemoveRange<TTable>(Func<TContext, DbSet<TTable>> TableFunc, IEnumerable<TTable> Models)
+            where TTable : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .RemoveRange(Models);
+            return NewWorker;
         }
         public virtual ContextWorker<TContext, TModel> SaveChanges()
         {
             Context.SaveChanges();
             return this;
         }
-
+        
         #region Private Process
         protected virtual void BaseAdd(TModel Model)
         {
