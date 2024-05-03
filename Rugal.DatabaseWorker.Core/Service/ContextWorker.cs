@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq.Expressions;
 
 namespace Rugal.DatabaseWorker.Core.Service
 {
@@ -39,29 +40,32 @@ namespace Rugal.DatabaseWorker.Core.Service
                 .AddRange(Models);
             return NewWorker;
         }
-        public virtual ContextWorker<TContext, TModel> Update(TModel Model)
+        public virtual ContextWorker<TContext, TModel> Update(Expression<Func<TModel>> NewModelExp)
         {
-            BaseUpdate(Model);
+            BaseUpdate(NewModelExp);
             return this;
         }
-        public virtual ContextWorker<TContext, TTable> Update<TTable>(Func<TContext, DbSet<TTable>> TableFunc, TTable Model)
+        public virtual ContextWorker<TContext, TTable> Update<TTable>(Func<TContext, DbSet<TTable>> TableFunc,
+            Expression<Func<TTable>> NewModelExp)
             where TTable : class
         {
             var NewWorker = AsContextWorker(Context, TableFunc)
-                .Update(Model);
+                .Update(NewModelExp);
             return NewWorker;
         }
-        public virtual ContextWorker<TContext, TModel> UpdateRange(IEnumerable<TModel> Models)
+        public virtual ContextWorker<TContext, TModel> UpdateRange(IEnumerable<TModel> Datas,
+            Expression<Func<TModel, TModel>> NewModelExp)
         {
-            foreach (var Item in Models)
-                BaseUpdate(Item);
+            BaseUpdateRange(Datas, NewModelExp);
             return this;
         }
-        public virtual ContextWorker<TContext, TTable> UpdateRange<TTable>(Func<TContext, DbSet<TTable>> TableFunc, IEnumerable<TTable> Models)
+        public virtual ContextWorker<TContext, TTable> UpdateRange<TTable>(Func<TContext, DbSet<TTable>> TableFunc,
+            IEnumerable<TTable> Datas,
+            Expression<Func<TTable, TTable>> NewModelExp)
             where TTable : class
         {
             var NewWorker = AsContextWorker(Context, TableFunc)
-                .UpdateRange(Models);
+                .UpdateRange(Datas, NewModelExp);
             return NewWorker;
         }
         public virtual ContextWorker<TContext, TModel> Remove(TModel Model)
@@ -101,11 +105,51 @@ namespace Rugal.DatabaseWorker.Core.Service
             var Entry = Context.Entry(Model);
             RCS_SetState(Entry, EntityState.Added);
         }
-        protected virtual void BaseUpdate(TModel Model)
+        protected virtual void BaseUpdate(Expression<Func<TModel>> NewModelExp)
         {
-            var Entry = Context.Entry(Model);
+            if (NewModelExp.Body is not MemberInitExpression MemberInitExp)
+                throw new Exception("Update method only allow [Init] expression type");
+
+            var NewModel = NewModelExp.Compile().Invoke();
+            SetUpdateEntry(NewModel, MemberInitExp);
+        }
+        protected virtual void BaseUpdateRange(IEnumerable<TModel> Datas, Expression<Func<TModel, TModel>> NewModelExp)
+        {
+            CheckInitMemberExpression(NewModelExp.Body, out var MemberInitExp);
+
+            var NewModelFunc = NewModelExp.Compile();
+            foreach (var Data in Datas)
+            {
+                var NewModel = NewModelFunc.Invoke(Data);
+                SetUpdateEntry(NewModel, MemberInitExp);
+            }
+        }
+        private void CheckInitMemberExpression(Expression Exp, out MemberInitExpression MemberInitExp)
+        {
+            if (Exp is not MemberInitExpression GetMemberInitExp)
+                throw new Exception("Update method only allow [Init] expression type");
+
+            MemberInitExp = GetMemberInitExp;
+        }
+        private void SetUpdateEntry(TModel NewModel, MemberInitExpression MemberInitExp)
+        {
+            var Entry = Context.Entry(NewModel);
+            var UpdateProperty = MemberInitExp
+                .Bindings
+                .Select(Item => Item.Member.Name);
+
+            foreach (var Property in Entry.Properties)
+            {
+                if (Property.Metadata.IsPrimaryKey())
+                    continue;
+
+                var PropertyName = Property.Metadata.Name;
+                Property.IsModified = UpdateProperty.Contains(PropertyName);
+            }
+
             RCS_SetState(Entry, EntityState.Modified);
         }
+
         protected virtual void BaseRemove(TModel Model)
         {
             var Entry = Context.Entry(Model);
