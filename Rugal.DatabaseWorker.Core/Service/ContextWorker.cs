@@ -124,7 +124,7 @@ namespace Rugal.DatabaseWorker.Core.Service
                 SetUpdateEntry(NewModel, MemberInitExp);
             }
         }
-        private void CheckInitMemberExpression(Expression Exp, out MemberInitExpression MemberInitExp)
+        private static void CheckInitMemberExpression(Expression Exp, out MemberInitExpression MemberInitExp)
         {
             if (Exp is not MemberInitExpression GetMemberInitExp)
                 throw new Exception("Update method only allow [Init] expression type");
@@ -149,7 +149,6 @@ namespace Rugal.DatabaseWorker.Core.Service
 
             RCS_SetState(Entry, EntityState.Modified);
         }
-
         protected virtual void BaseRemove(TModel Model)
         {
             var Entry = Context.Entry(Model);

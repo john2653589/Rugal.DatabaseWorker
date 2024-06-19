@@ -16,12 +16,22 @@ namespace Rugal.DatabaseWorker.Core.Service
         }
         public virtual ContextWorker<TContext, TModel> Add<TContext, TModel>(
             TContext Context,
-            Func<TContext, DbSet<TModel>> TableFunc, TModel Model)
+            Func<TContext, DbSet<TModel>> TableFunc, TModel Datas)
             where TContext : DbContext
             where TModel : class
         {
             var NewWorker = AsContextWorker(Context, TableFunc)
-                .Add(Model);
+                .Add(Datas);
+            return NewWorker;
+        }
+        public virtual ContextWorker<TContext, TModel> AddRange<TContext, TModel>(
+            TContext Context,
+            Func<TContext, DbSet<TModel>> TableFunc, IEnumerable<TModel> Datas)
+            where TContext : DbContext
+            where TModel : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .AddRange(Datas);
             return NewWorker;
         }
 
@@ -34,7 +44,6 @@ namespace Rugal.DatabaseWorker.Core.Service
                 .Update(NewModelExp);
             return NewWorker;
         }
-
         public virtual ContextWorker<TContext, TModel> UpdateRange<TContext, TModel>(TContext Context, Func<TContext, DbSet<TModel>> TableFunc,
             IEnumerable<TModel> Datas,
             Expression<Func<TModel, TModel>> NewModelExp)
@@ -56,6 +65,17 @@ namespace Rugal.DatabaseWorker.Core.Service
                 .Remove(Model);
             return NewWorker;
         }
+        public virtual ContextWorker<TContext, TModel> RemoveRange<TContext, TModel>(
+            TContext Context,
+            Func<TContext, DbSet<TModel>> TableFunc, IEnumerable<TModel> Datas)
+            where TContext : DbContext
+            where TModel : class
+        {
+            var NewWorker = AsContextWorker(Context, TableFunc)
+                .RemoveRange(Datas);
+            return NewWorker;
+        }
+
         public virtual ContextWorker<TContext, TModel> SaveChanges<TContext, TModel>(
             TContext Context,
             Func<TContext, DbSet<TModel>> TableFunc)
